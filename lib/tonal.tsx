@@ -8,10 +8,12 @@ function addToSet(setNum: number, note: string): number {
   const setNum2 = PcSet.get([note]).setNum;
   return setNum | setNum2;
 }
+
 function removeFromSet(setNum: number, note: string): number {
   const setNum2 = PcSet.get([note]).setNum;
   return setNum & ~setNum2;
 }
+
 export function toggleNoteInSet(pcset: Pcset, note: string): Pcset {
   let nextSetNum: number;
   if (PcSet.isNoteIncludedIn(pcset)(note)) {
@@ -22,6 +24,7 @@ export function toggleNoteInSet(pcset: Pcset, note: string): Pcset {
 
   return PcSet.get(nextSetNum);
 }
+
 export function setToNotes(pcset: Pcset) {
   return pcset.intervals.map(Note.transposeFrom("C"));
 }
@@ -29,7 +32,7 @@ export function setToNotes(pcset: Pcset) {
 const fifthDistance = Range.numeric([-8, 13]).reduce((prev, curr) => {
   prev[Note.transposeFifths("C", curr)] = Math.abs(curr);
   return prev;
-}, {} as { [_note: string]: number | undefined });
+}, {} as { [_note: string]: number });
 
 export function simplifyChord(chord: TChord): TChord {
   if (chord.tonic !== undefined) {
@@ -90,4 +93,20 @@ export function simplifyNote(note: string) {
   }
 
   return note;
+}
+
+export function getChordWithOctave(
+  chord: TChord,
+  octave: number = 4,
+  inversion: number
+): TChord {
+  if (chord.tonic === null) {
+    return chord;
+  }
+
+  return Chord.getChord(
+    chord.aliases[0],
+    chord.tonic + octave,
+    chord.notes[inversion]
+  );
 }

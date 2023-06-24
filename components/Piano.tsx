@@ -1,13 +1,11 @@
-function range(length: number): Array<number> {
-  return Array.from({ length }, (_, i) => i);
-}
+import { range } from "@/lib/functools";
 
 type PianoOptions = {
   start: number;
   end: number;
 };
 
-type Piano = {
+type KeyData = {
   index: number;
   num: number;
   type: "white" | "black";
@@ -21,22 +19,23 @@ type Piano = {
       max: number;
     };
   };
-  selected: boolean;
-}[];
+  selected: string | undefined;
+};
 
-function makePiano(selected: number[] = [], opt: PianoOptions) {
+type PianoData = { keys: KeyData[]; height: number; width: number };
+
+function makePiano(selection: KeySelection, options: PianoOptions): PianoData {
   const widthRatio = 0.625;
   const heightRatio = 0.667;
 
-  const defaults = {
-    start: 29,
-    end: 101,
-  };
-
-  let options = Object.assign({}, defaults, opt);
-
   const lowestNote = options.start;
   const highestNote = options.end;
+
+  const selectionMap = new Map<number, string>();
+
+  Object.entries(selection).map(([key, value]) => {
+    value.forEach((v) => selectionMap.set(v, key));
+  });
 
   const numKeys = highestNote - lowestNote + 1;
 
@@ -56,8 +55,9 @@ function makePiano(selected: number[] = [], opt: PianoOptions) {
   const height = 70;
   const whiteWidth = height / 4;
   const blackWidth = whiteWidth * widthRatio;
+  const width = numWhiteKeys * whiteWidth;
 
-  return range(numKeys).map((i) => {
+  const keys = range(numKeys).map((i) => {
     const num = i + lowestNote;
     const offset = isWhite(i) ? 0 : -blackWidth / 2;
     return {
@@ -78,36 +78,44 @@ function makePiano(selected: number[] = [], opt: PianoOptions) {
           max: height,
         },
       },
-      selected: selected.includes(i + lowestNote),
+      selected: selectionMap.get(i + lowestNote),
     };
   });
+
+  return {
+    keys,
+    height,
+    width,
+  };
 }
 
+type KeySelection = {
+  [color: string]: number[];
+};
+
 type PianoProps = {
-  selected: number[];
-  onKeyPress: (keyNum: number) => void;
+  onKeyPress?: (keyNum: number) => void;
+  selection: KeySelection;
 };
 
 export default function Piano(props: PianoProps) {
-  const { selected, onKeyPress } = props;
-
   const middleC = 60;
-  const selectedColor = "#f1ff5e";
   const border = 2;
   const opts = { start: 29, end: 101 };
-  const piano = makePiano(selected, opts);
   const strokeColor = "#444";
 
-  const height =
-    piano.filter((key) => key.type == "white")[0].coord.y.max + 2 * border;
+  const { selection, onKeyPress } = props;
+  const { height, width, keys } = makePiano(selection, opts);
 
   const handleKeyPress = (keyNum: number) => {
-    onKeyPress(keyNum);
+    if (onKeyPress !== undefined) {
+      onKeyPress(keyNum);
+    }
   };
 
   return (
-    <svg width={800} height={height}>
-      {piano
+    <svg width={width + 2 * border} height={height + 2 * border}>
+      {keys
         .filter((key) => key.type == "white")
         .map((key) => (
           <rect
@@ -117,13 +125,13 @@ export default function Piano(props: PianoProps) {
             width={key.coord.x.max - key.coord.x.min}
             height={key.coord.y.max - key.coord.y.min}
             stroke={strokeColor}
-            fill={key.selected ? selectedColor : "#fff"}
+            fill={key.selected || "#fff"}
             strokeWidth={border}
             onClick={() => handleKeyPress(key.num)}
           ></rect>
         ))}
 
-      {piano
+      {keys
         .filter((key) => key.type == "black")
         .map((key) => (
           <rect
@@ -133,13 +141,13 @@ export default function Piano(props: PianoProps) {
             width={key.coord.x.max - key.coord.x.min}
             height={key.coord.y.max - key.coord.y.min}
             stroke={strokeColor}
-            fill={key.selected ? selectedColor : strokeColor}
+            fill={key.selected || strokeColor}
             strokeWidth={border}
             onClick={() => handleKeyPress(key.num)}
           ></rect>
         ))}
 
-      {piano
+      {keys
         .filter((key) => key.num === middleC)
         .map((key) => (
           <circle

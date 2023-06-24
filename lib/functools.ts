@@ -6,3 +6,7 @@ export const pipeline = <T>(value: T) => {
     value,
   };
 };
+
+export function range(length: number): number[] {
+  return Array.from({ length }, (_, i) => i);
+}
