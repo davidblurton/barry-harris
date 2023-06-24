@@ -1,5 +1,5 @@
+import { simplifyNote } from "@/lib/tonal";
 import { Note } from "tonal";
-import { simplifyNote } from "../lib/tonal";
 
 type DisplayNoteProps = {
   note: string;

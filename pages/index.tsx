@@ -6,7 +6,7 @@ import { Json } from "@/components/Json";
 import { toDropTwo } from "@/lib/tonal";
 import { Slider } from "@/components/ui/slider";
 
-export default function () {
+export default function Index() {
   const [inputText, setInputText] = useState("A7");
   const [selected, setSelected] = useState<number[]>([]);
   const [inversion, setInversion] = useState(0);

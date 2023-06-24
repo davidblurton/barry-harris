@@ -32,15 +32,4 @@ const fifthDistance = Range.numeric([-8 - 7, 13 + 7]).reduce((prev, curr) => {
   return prev;
 }, {} as Record<string, number>);
 
-export function simplifyNote(note: string) {
-  const enharmonic = Note.enharmonic(note);
 
-  // Logic should be based on how common flat or sharp is in keys
-  // Not distance from C
-  // eg F sharp should have lower weight.
-  if (fifthDistance[enharmonic] < fifthDistance[note]) {
-    return enharmonic;
-  }
-
-  return note;
-}

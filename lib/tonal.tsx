@@ -67,3 +67,27 @@ export function toDropTwo(notes: string[]) {
     ...notes.slice(notes.length - 1, notes.length),
   ];
 }
+
+export function simplifyNote(note: string) {
+  const enharmonic = Note.enharmonic(note);
+
+  const enharmonicDistance = fifthDistance[enharmonic];
+  const noteDistance = fifthDistance[note];
+
+  if (enharmonicDistance === undefined) {
+    return note;
+  }
+
+  if (noteDistance === undefined) {
+    return note;
+  }
+
+  // Logic should be based on how common flat or sharp is in keys
+  // Not distance from C
+  // eg F sharp should have lower weight.
+  if (enharmonicDistance < noteDistance) {
+    return enharmonic;
+  }
+
+  return note;
+}
