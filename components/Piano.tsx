@@ -101,7 +101,7 @@ type PianoProps = {
 export default function Piano(props: PianoProps) {
   const middleC = 60;
   const border = 2;
-  const opts = { start: 29, end: 101 };
+  const opts = { start: 48, end: 101 };
   const strokeColor = "#444";
 
   const { selection, onKeyPress } = props;

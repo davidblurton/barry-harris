@@ -1,10 +1,11 @@
 import { useState } from "react";
 import Piano from "@/components/Piano";
 import { Input } from "@/components/ui/input";
-import { Chord, Midi } from "tonal";
+import { Chord, Interval, Midi, Note } from "tonal";
 import { getChordWithOctave } from "@/lib/tonal";
 import { Slider } from "@/components/ui/slider";
 import { Chord as TChord } from "@tonaljs/chord";
+import { Json } from "@/components/Json";
 
 type DisplayChordProps = {
   inputText: string;
@@ -25,12 +26,36 @@ function DisplayChord(props: DisplayChordProps) {
       .filter(Boolean);
   }
 
+  function getDiminished(chord: TChord) {
+    if (chord.tonic === null) {
+      return undefined;
+    }
+
+    if (
+      chord.type === "sixth" ||
+      chord.type === "minor sixth" ||
+      chord.type === "diminished seventh"
+    ) {
+      const root = Note.transpose(chord.tonic, "2M");
+      return Chord.get(root + "dim7");
+    }
+
+    return undefined;
+  }
+
+  const diminished = getDiminished(chord);
+
   const selection = {
     "#f1ff5e": applyVoicing(chord),
-    // "#78BEFF": applyVoicing(Chord.get("Ddim7")),
+    "#78BEFF": diminished ? applyVoicing(diminished) : [],
   };
 
-  return <Piano selection={selection} />;
+  return (
+    <div>
+      <Piano selection={selection} />
+      {/* <Json obj={chord} /> */}
+    </div>
+  );
 }
 
 export default function Index() {
@@ -44,7 +69,7 @@ export default function Index() {
 
   return (
     <div className="px-8 py-8 space-y-8">
-      <Input placeholder="chord" onChange={handleChange} value={inputText} />
+      <Input placeholder="Chord" onChange={handleChange} value={inputText} />
 
       <Slider
         max={3}
