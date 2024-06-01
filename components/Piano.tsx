@@ -31,11 +31,9 @@ function makePiano(selection: KeySelection, options: PianoOptions): PianoData {
   const lowestNote = options.start;
   const highestNote = options.end;
 
-  const selectionMap = new Map<number, string>();
+  const selectionMap = new Map();
 
-  Object.entries(selection).map(([key, value]) => {
-    value.forEach((v) => selectionMap.set(v, key));
-  });
+  selection.forEach((x) => selectionMap.set(x.noteNum, x.color));
 
   const numKeys = highestNote - lowestNote + 1;
 
@@ -90,8 +88,9 @@ function makePiano(selection: KeySelection, options: PianoOptions): PianoData {
 }
 
 type KeySelection = {
-  [color: string]: number[];
-};
+  noteNum: number;
+  color: string;
+}[];
 
 type PianoProps = {
   onKeyPress?: (keyNum: number) => void;
@@ -101,7 +100,7 @@ type PianoProps = {
 export default function Piano(props: PianoProps) {
   const middleC = 60;
   const border = 2;
-  const opts = { start: 48, end: 101 };
+  const opts = { start: 48, end: 84 };
   const strokeColor = "#444";
 
   const { selection, onKeyPress } = props;
