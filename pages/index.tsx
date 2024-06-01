@@ -133,12 +133,12 @@ function DisplayChord(props: DisplayChordProps) {
   };
 
   return (
-    <div className="space-y-8 max-w-sm">
+    <div className="max-w-sm">
       <Head>
         <title>Chord finder</title>
       </Head>
       <Piano selection={[rootSelection, ...selections]} />
-      <div className="text-xl">
+      <div className="text-xl my-2">
         For <span className="font-bold">{inputText}</span> play{" "}
         <span className="font-bold">{target}</span>
       </div>
@@ -159,8 +159,8 @@ export default function Index() {
   }
 
   return (
-    <div className="px-2 py-8 md:p-8 space-y-8">
-      <div className="space-y-8 max-w-xs">
+    <div className="px-2 py-8 md:p-8">
+      <div className="mb-4 max-w-xs">
         <Input
           placeholder="Enter a chord"
           onChange={handleChange}
